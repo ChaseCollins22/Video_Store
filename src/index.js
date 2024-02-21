@@ -1,13 +1,16 @@
 const express = require('express');
-const genresRouter = require('./routes/genres');
+const winston = require('winston');
 
 const app = express();
 
-app.use(express.json());
-app.use('/api/genres', genresRouter);
+require('./startup/config')(app);
+require('./startup/db')();
+require('./startup/logging')();
+require('./startup/validation')();
+require('./startup/routes')(app);
 
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
-  console.log(`App started at http://localhost:${PORT}`);
-})
+const server = app.listen(PORT, () => winston.info(`App started at http://localhost:${PORT}`));
+
+module.exports = server;
